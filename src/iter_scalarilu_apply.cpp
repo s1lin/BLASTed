@@ -196,7 +196,7 @@ void jacobi_upper_sweeps(const CRawBSRMatrix<scalar,index> *const mat,
 			zold[i] = za[i];
 
 #pragma omp for schedule(dynamic, thread_chunk_size) nowait
-		for(index i = 0; i < mat->nbrows; i--)
+		for(index i = 0; i < mat->nbrows; i++)
 		{
 			za[i] = scalar_upper_triangular<scalar,index>(iluvals, mat->bcolind, mat->diagind[i],
 			                                              mat->browptr[i+1], 1.0/iluvals[mat->diagind[i]],

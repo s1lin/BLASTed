@@ -60,7 +60,7 @@ static double std_deviation(const double *const vals, const double avg, const in
 	return deviate;
 }
 
-template <typename scalar, typename index = int>
+template <typename scalar, typename index>
 int run_one_test(const RunParams rp, const TimingData refdata, const MatrixView<scalar,index>& AA,
                  const Vector<scalar>& bb, Vector<scalar>& uu,
                  TimingData& tdata, std::ofstream& outf)

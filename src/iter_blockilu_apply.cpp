@@ -25,18 +25,18 @@ void jacobi_unitlower_sweeps(const CRawBSRMatrix<scalar,index> *const mat,
                              Segment_t<scalar,bs> *const y);
 
 template <typename scalar, typename index, int bs, StorageOptions stor>
-void async_unitupper_sweeps(const CRawBSRMatrix<scalar,index> *const mat,
-                            const Block_t<scalar,bs,stor> *const ilu,
-                            const Segment_t<scalar,bs> *const y,
-                            const bool usethreads, const int napplysweeps, const int thread_chunk_size,
-                            Segment_t<scalar,bs> *const z);
+void async_upper_sweeps(const CRawBSRMatrix<scalar,index> *const mat,
+                        const Block_t<scalar,bs,stor> *const ilu,
+                        const Segment_t<scalar,bs> *const y,
+                        const bool usethreads, const int napplysweeps, const int thread_chunk_size,
+                        Segment_t<scalar,bs> *const z);
 
 template <typename scalar, typename index, int bs, StorageOptions stor>
-void jacobi_unitupper_sweeps(const CRawBSRMatrix<scalar,index> *const mat,
-                             const Block_t<scalar,bs,stor> *const ilu,
-                             const Segment_t<scalar,bs> *const y,
-                             const bool usethreads, const int napplysweeps, const int thread_chunk_size,
-                             Segment_t<scalar,bs> *const z);
+void jacobi_upper_sweeps(const CRawBSRMatrix<scalar,index> *const mat,
+                         const Block_t<scalar,bs,stor> *const ilu,
+                         const Segment_t<scalar,bs> *const y,
+                         const bool usethreads, const int napplysweeps, const int thread_chunk_size,
+                         Segment_t<scalar,bs> *const z);
 
 /// Applies the block-ILU0 factorization using a block variant of the asynch triangular solve in
 /// \cite async:anzt_triangular
@@ -124,11 +124,11 @@ void block_ilu0_apply(const CRawBSRMatrix<scalar,index> *const mat,
 
 	// Iterate upper
 	if(jacobiiter)
-		jacobi_unitupper_sweeps<scalar,index,bs,stor>(mat, ilu, y, usethreads, napplysweeps,
-		                                              thread_chunk_size, z);
+		jacobi_upper_sweeps<scalar,index,bs,stor>(mat, ilu, y, usethreads, napplysweeps,
+		                                          thread_chunk_size, z);
 	else
-		async_unitupper_sweeps<scalar,index,bs,stor>(mat, ilu, y, usethreads, napplysweeps,
-		                                             thread_chunk_size, z);
+		async_upper_sweeps<scalar,index,bs,stor>(mat, ilu, y, usethreads, napplysweeps,
+		                                         thread_chunk_size, z);
 
 	// scale z
 	if(scale)
@@ -223,11 +223,11 @@ void jacobi_unitlower_sweeps(const CRawBSRMatrix<scalar,index> *const mat,
  * If done serially, this is a back-substitution.
  */
 template <typename scalar, typename index, int bs, StorageOptions stor>
-void async_unitupper_sweeps(const CRawBSRMatrix<scalar,index> *const mat,
-                            const Block_t<scalar,bs,stor> *const ilu,
-                            const Segment_t<scalar,bs> *const y,
-                            const bool usethreads, const int napplysweeps, const int thread_chunk_size,
-                            Segment_t<scalar,bs> *const z)
+void async_upper_sweeps(const CRawBSRMatrix<scalar,index> *const mat,
+                        const Block_t<scalar,bs,stor> *const ilu,
+                        const Segment_t<scalar,bs> *const y,
+                        const bool usethreads, const int napplysweeps, const int thread_chunk_size,
+                        Segment_t<scalar,bs> *const z)
 {
 #pragma omp parallel default(shared) if(usethreads)
 	for(int isweep = 0; isweep < napplysweeps; isweep++)
@@ -246,11 +246,11 @@ void async_unitupper_sweeps(const CRawBSRMatrix<scalar,index> *const mat,
  * Note that we now invert the loop direction for a possible small gain in efficiency.
  */
 template <typename scalar, typename index, int bs, StorageOptions stor>
-void jacobi_unitupper_sweeps(const CRawBSRMatrix<scalar,index> *const mat,
-                             const Block_t<scalar,bs,stor> *const ilu,
-                             const Segment_t<scalar,bs> *const y,
-                             const bool usethreads, const int napplysweeps, const int thread_chunk_size,
-                             Segment_t<scalar,bs> *const z)
+void jacobi_upper_sweeps(const CRawBSRMatrix<scalar,index> *const mat,
+                         const Block_t<scalar,bs,stor> *const ilu,
+                         const Segment_t<scalar,bs> *const y,
+                         const bool usethreads, const int napplysweeps, const int thread_chunk_size,
+                         Segment_t<scalar,bs> *const z)
 {
 	scalar *const zoldarr = static_cast<scalar*>(aligned_alloc(CACHE_LINE_LEN, mat->nbrows*bs*sizeof(scalar)));
 	using Seg = Segment_t<scalar,bs>;
